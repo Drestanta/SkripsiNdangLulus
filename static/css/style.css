@@ -1,0 +1,30 @@
+/* ============================================================
+   TAMPILAN CERMIN & RESPONSIF KAMERA LINTAS PERAMBAN
+   ============================================================ */
+div[data-testid="stCameraInput"] video {
+    -webkit-transform: scaleX(-1) !important;
+    -moz-transform: scaleX(-1) !important;
+    -ms-transform: scaleX(-1) !important;
+    -o-transform: scaleX(-1) !important;
+    transform: scaleX(-1) !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    border: 2px solid #2b313e !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    width: 100% !important;
+}
+
+div[data-testid="stCameraInput"] {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin: 0 auto !important;
+}
+
+/* Kartu Evaluasi Model */
+.metric-box {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 12px;
+}

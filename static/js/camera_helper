@@ -1,0 +1,18 @@
+// ============================================================
+// DIAGNOSTIK KAMERA PERAMBAN (CLIENT-SIDE WEBRTC HELPER)
+// ============================================================
+(function() {
+    console.log("Memverifikasi kapabilitas kamera web peramban...");
+
+    // 1. Validasi Konteks Keamanan (Secure Context)
+    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        console.warn("PERINGATAN: Peramban memblokir kamera web pada koneksi HTTP non-aman (Gunakan HTTPS atau Localhost).");
+    }
+
+    // 2. Validasi Ketersediaan API MediaDevices
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        console.log("Kamera Web didukung penuh oleh peramban ini.");
+    } else {
+        console.error("Peramban ini tidak mendukung API navigator.mediaDevices.getUserMedia.");
+    }
+})();
