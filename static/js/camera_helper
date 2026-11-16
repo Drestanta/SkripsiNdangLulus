@@ -1,18 +1,33 @@
 // ============================================================
-// DIAGNOSTIK KAMERA PERAMBAN (CLIENT-SIDE WEBRTC HELPER)
+// DIAGNOSTIK & KOMPATIBILITAS KAMERA LINTAS PERAMBAN (WEBRTC)
 // ============================================================
 (function() {
-    console.log("Memverifikasi kapabilitas kamera web peramban...");
-
-    // 1. Validasi Konteks Keamanan (Secure Context)
-    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    if (!window.isSecureContext && !isLocal) {
         console.warn("PERINGATAN: Peramban memblokir kamera web pada koneksi HTTP non-aman (Gunakan HTTPS atau Localhost).");
     }
 
-    // 2. Validasi Ketersediaan API MediaDevices
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        console.log("Kamera Web didukung penuh oleh peramban ini.");
+        console.log("Kamera Web (MediaDevices API) didukung penuh.");
     } else {
-        console.error("Peramban ini tidak mendukung API navigator.mediaDevices.getUserMedia.");
+        console.error("Peramban tidak mendukung API MediaDevices.");
     }
+
+    // Pastikan atribut playsinline aktif pada preview video untuk kompatibilitas Safari iOS/macOS
+    function pastikanPlaysInline() {
+        try {
+            const parentDoc = window.parent.document;
+            if (!parentDoc) return;
+            const videos = parentDoc.querySelectorAll('div[data-testid="stCameraInput"] video');
+            videos.forEach(function(video) {
+                if (!video.hasAttribute('playsinline')) {
+                    video.setAttribute('playsinline', 'true');
+                    video.setAttribute('webkit-playsinline', 'true');
+                    video.muted = true;
+                }
+            });
+        } catch (err) {}
+    }
+
+    setInterval(pastikanPlaysInline, 1000);
 })();

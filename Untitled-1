@@ -1,0 +1,20 @@
+SkripsiNdangLulus/
+├── .vscode/
+│   └── settings.json
+├── core/
+│   ├── __init__.py                (file kosong)
+│   ├── occlusion_detector.py      (CLAHE LAB + Deteksi Oklusi Anatomis)
+│   ├── embedding_extractor.py     (SCRFD/MTCNN/Haar + Ekstraksi 3 Model 512-D)
+│   └── consensus_engine.py        (Cosine Distance + Single Identity Consensus Lock)
+├── database/
+│   ├── __init__.py                (file kosong)
+│   ├── schema.sql                 (Skema SQL murni + data tolok ukur)
+│   └── db_manager.py              (Manajemen SQLite & Foto BLOB)
+├── static/
+│   ├── css/
+│   │   └── style.css              (Tema Modern Dark Enterprise + Kamera Cermin)
+│   └── js/
+│       └── camera_helper.js       (Diagnostik WebRTC & kompatibilitas Safari)
+├── app.py                         (Orkestrator antarmuka Streamlit 6 Modul)
+├── requirements.txt               (Daftar pustaka Python)
+└── run.sh                         (Skrip peluncur otomatis macOS/Linux/Git Bash)

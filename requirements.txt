@@ -9,5 +9,6 @@ pandas
 numpy
 pillow
 scikit-learn
+scipy
 werkzeug
 gdown

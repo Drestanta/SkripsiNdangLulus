@@ -1,29 +1,30 @@
 #!/bin/bash
-# ============================================================
-# SKRIP OTOMASI EKSEKUSI SISTEM PRESENSI BIOMETRIK
-# ============================================================
+cd "$(dirname "$0")" || exit 1
 
-echo "=================================================="
-echo "  Sistem Presensi Wajah Siswa SMK PGRI Sukoharjo  "
-echo "  Komparasi: ArcFace, InsightFace ONNX, FaceNet   "
-echo "=================================================="
+echo "======================================================"
+echo "  Sistem Presensi Wajah Siswa SMK PGRI Sukoharjo      "
+echo "  Komparasi: ArcFace, InsightFace ONNX, FaceNet-512   "
+echo "======================================================"
 
-# 1. Pengecekan Lingkungan Virtual Python
 if [ ! -d ".venv" ]; then
-    echo "[INFO] Membuat Virtual Environment Python..."
+    echo "[INFO] Membuat Virtual Environment Python (.venv)..."
     python3 -m venv .venv
 fi
 
-# Aktivasi Virtual Environment
-source .venv/bin/activate || source .venv/Scripts/activate
+if [ -f ".venv/bin/activate" ]; then
+    source ".venv/bin/activate"
+elif [ -f ".venv/Scripts/activate" ]; then
+    source ".venv/Scripts/activate"
+fi
 
-# 2. Pembaruan dan Pemasangan Dependensi
-echo "[INFO] Memeriksa paket dependensi..."
-pip install --upgrade pip > /dev/null 2>&1
-pip install -r requirements.txt > /dev/null 2>&1
-pip install insightface onnxruntime > /dev/null 2>&1
+echo "[INFO] Memeriksa kesiapan pustaka AI..."
+if ! python -c "import streamlit, deepface, insightface, cv2, scipy" > /dev/null 2>&1; then
+    echo "[INFO] Memasang paket dari requirements.txt..."
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements.txt
+else
+    echo "[OK] Seluruh pustaka AI siap digunakan."
+fi
 
-# 3. Menjalankan Server Web Streamlit
-echo "[INFO] Menjalankan server aplikasi Streamlit..."
-echo "Aplikasi dapat diakses pada: http://localhost:8501"
-streamlit run app.py
+echo "[INFO] Menjalankan aplikasi pada: http://localhost:8501"
+python -m streamlit run app.py
