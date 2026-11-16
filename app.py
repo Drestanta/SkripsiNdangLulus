@@ -79,6 +79,7 @@ with st.sidebar:
         "Presensi Siswa", "Log Kehadiran", "Registrasi Siswa Baru",
         "Data Siswa Terdaftar", "Laporan Evaluasi Skripsi", "Pengaturan Sistem"
     ]
+    DAFTAR_KELAS = ["X RPL", "XI RPL", "XII RPL", "X TKJ", "XI TKJ", "XII TKJ", "XI BD", "XII BD"]
 
     for m in daftar_menu:
         is_active = (st.session_state["menu"] == m)
@@ -386,14 +387,14 @@ elif menu == "Registrasi Siswa Baru":
                                 except: pass
 
 # ============================================================
-# MODUL 4: DATA SISWA TERDAFTAR
+# MODUL 4: DATA SISWA TERDAFTAR (LIHAT FOTO, UBAH KELAS, HAPUS)
 # ============================================================
 elif menu == "Data Siswa Terdaftar":
     st.markdown("""
         <div class="page-header-box">
             <div class="page-category">Administrasi Siswa</div>
             <h1 class="page-title">Direktori Data Siswa Terdaftar</h1>
-            <div class="page-desc">Data profil siswa dan foto referensi yang tersimpan langsung di dalam basis data SQLite presensi_smk.db.</div>
+            <div class="page-desc">Data profil siswa, pembaruan kelas, dan foto referensi yang tersimpan di dalam basis data SQLite presensi_smk.db.</div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -406,19 +407,45 @@ elif menu == "Data Siswa Terdaftar":
         st.dataframe(pd.DataFrame(data_tabel), use_container_width=True, hide_index=True)
 
         st.markdown("---")
-        st.markdown("#### 🖼️ Pratinjau Foto Siswa dari Database")
-        pilihan = {f"{s['nama_siswa']} (NISN: {s['nisn']}) - ID: {s['id_siswa']}": s for s in daftar_siswa}
-        col_v1, col_v2 = st.columns([2, 1])
+        st.markdown("#### 🛠️ Kelola Data & Ubah Kelas Siswa")
+        pilihan = {f"{s['nama_siswa']} (NISN: {s['nisn']}) - {s['kelas']} [ID: {s['id_siswa']}]": s for s in daftar_siswa}
+
+        col_v1, col_v2 = st.columns([2, 1], gap="large")
         with col_v1:
             siswa_obj = pilihan[st.selectbox("Pilih Siswa:", list(pilihan.keys()))]
-            if st.button("Hapus Siswa Permanen", type="secondary"):
-                db.hapus_siswa(siswa_obj["id_siswa"])
-                st.success(f"Data {siswa_obj['nama_siswa']} berhasil dihapus dari database.")
-                time.sleep(1)
-                st.rerun()
+
+            # Menyiapkan opsi kelas dengan default otomatis sesuai kelas siswa saat ini
+            kelas_lama = siswa_obj["kelas"]
+            opsi_kelas = DAFTAR_KELAS if kelas_lama in DAFTAR_KELAS else [kelas_lama] + DAFTAR_KELAS
+            idx_default = opsi_kelas.index(kelas_lama)
+
+            kelas_baru = st.selectbox(
+                "Pilih Kelas Baru:",
+                opsi_kelas,
+                index=idx_default,
+                key=f"edit_kelas_{siswa_obj['id_siswa']}"
+            )
+
+            col_btn1, col_btn2 = st.columns(2)
+            with col_btn1:
+                if st.button("💾 Simpan Perubahan Kelas", type="primary", use_container_width=True):
+                    if kelas_baru == kelas_lama:
+                        st.info(f"Kelas {siswa_obj['nama_siswa']} sudah berada di {kelas_lama}.")
+                    else:
+                        if db.ubah_kelas_siswa(siswa_obj["id_siswa"], kelas_baru):
+                            st.success(f"Kelas {siswa_obj['nama_siswa']} berhasil diubah dari {kelas_lama} menjadi {kelas_baru}!")
+                            time.sleep(1)
+                            st.rerun()
+            with col_btn2:
+                if st.button("🗑️ Hapus Siswa Permanen", type="secondary", use_container_width=True):
+                    db.hapus_siswa(siswa_obj["id_siswa"])
+                    st.success(f"Data {siswa_obj['nama_siswa']} berhasil dihapus dari database.")
+                    time.sleep(1)
+                    st.rerun()
+
         with col_v2:
             if siswa_obj.get("foto_blob"):
-                st.image(siswa_obj["foto_blob"], caption=f"Foto Database: {siswa_obj['nama_siswa']}", width=180)
+                st.image(siswa_obj["foto_blob"], caption=f"Foto Database: {siswa_obj['nama_siswa']} ({kelas_lama})", width=180)
             else:
                 st.caption("Siswa ini belum memiliki foto di database.")
     else:

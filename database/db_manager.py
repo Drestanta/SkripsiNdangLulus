@@ -153,6 +153,19 @@ def simpan_log_komparasi(data_log):
     conn.commit()
     conn.close()
 
+def ubah_kelas_siswa(id_siswa, kelas_baru):
+    """Memperbarui tingkat kelas siswa pada tabel siswa_referensi"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE siswa_referensi SET kelas = ? WHERE id_siswa = ?',
+        (kelas_baru, id_siswa)
+    )
+    conn.commit()
+    berhasil = cursor.rowcount > 0
+    conn.close()
+    return berhasil
+
 def hapus_siswa(id_siswa):
     conn = get_connection()
     cursor = conn.cursor()
